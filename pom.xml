@@ -49,18 +49,7 @@
                 <version>${org.junit.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>com.google.testing.compile</groupId>
-                <artifactId>compile-testing</artifactId>
-                <version>${com.google.testing.compile.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${com.google.guava.version}</version>
-                <scope>test</scope>
-            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 
