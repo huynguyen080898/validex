@@ -4,6 +4,7 @@ import com.nqh.validex.annotations.Max;
 import com.nqh.validex.annotations.Min;
 import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Size;
+import com.nqh.validex.annotations.NotEmpty;
 import com.nqh.validex.annotations.Pattern;
 import com.nqh.validex.annotations.Valid;
 import com.nqh.validex.processor.handler.AnnotationHandler;
@@ -71,6 +72,7 @@ public class ValidationProcessor extends AbstractProcessor {
         handlers.put(Min.class, new com.nqh.validex.processor.handler.impl.MinHandler());
         handlers.put(Max.class, new com.nqh.validex.processor.handler.impl.MaxHandler());
         handlers.put(Pattern.class, new PatternHandler());
+        handlers.put(NotEmpty.class, new com.nqh.validex.processor.handler.impl.NotEmptyHandler());
         messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor initialized with " + handlers.size() + " handlers");
     }
 
