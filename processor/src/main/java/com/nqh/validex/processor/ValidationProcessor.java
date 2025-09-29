@@ -62,15 +62,16 @@ public class ValidationProcessor extends AbstractProcessor {
 
         // Deterministic handler order
         handlers = new LinkedHashMap<>();
-        handlers.put(NotNull.class, new NotNullHandler());
-        handlers.put(Size.class, new SizeHandler());
-        handlers.put(Min.class, new MinHandler());
-        handlers.put(Max.class, new MaxHandler());
+        handlers.put(NotNull.class, new com.nqh.validex.processor.handler.impl.NotNullHandler());
+        handlers.put(Size.class, new com.nqh.validex.processor.handler.impl.SizeHandler());
+        handlers.put(Min.class, new com.nqh.validex.processor.handler.impl.MinHandler());
+        handlers.put(Max.class, new com.nqh.validex.processor.handler.impl.MaxHandler());
+        messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor initialized with " + handlers.size() + " handlers");
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor invoked!");
+        messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor invoked! annotations=" + annotations.size());
 
         Set<TypeElement> classesToGenerate = new HashSet<>();
 
@@ -86,6 +87,7 @@ public class ValidationProcessor extends AbstractProcessor {
                 }
             }
         }
+        messager.printMessage(Diagnostic.Kind.NOTE, "Total classes to generate: " + classesToGenerate.size());
 
         for (TypeElement classElement : classesToGenerate) {
             messager.printMessage(Diagnostic.Kind.NOTE, "Processing class: " + classElement.getQualifiedName());
@@ -98,6 +100,7 @@ public class ValidationProcessor extends AbstractProcessor {
                 try (Writer writer = file.openWriter()) {
                     writer.write(generateValidatorCode(packageName, className, validatorClassName, classElement));
                 }
+                messager.printMessage(Diagnostic.Kind.NOTE, "Generated: " + packageName + "." + validatorClassName);
             } catch (Exception ex) {
                 messager.printMessage(Diagnostic.Kind.ERROR,
                         "Failed to generate validator for " + className + ": " + ex.getMessage());
@@ -135,6 +138,7 @@ public class ValidationProcessor extends AbstractProcessor {
             String fieldName = field.getSimpleName().toString();
             String accessor = resolveAccessor(classElement, field);
             if (accessor == null) {
+                messager.printMessage(Diagnostic.Kind.NOTE, "Skip field (no accessor): " + fieldName);
                 continue; // skip fields without supported accessor
             }
             for (Map.Entry<Class<? extends Annotation>, AnnotationHandler<?>> entry : handlers.entrySet()) {
@@ -150,7 +154,7 @@ public class ValidationProcessor extends AbstractProcessor {
                 sb.append("{ ");
                 sb.append("ValidationResult __child = Validators.validate(").append(accessor).append("); ");
                 sb.append("if (!__child.isValid()) { for (Violation __v : __child.violations()) { ");
-                sb.append("String __p = __v.path() == null || __v.path().isEmpty() ? \"").append(fieldName).append("\" : \"").append(fieldName).append(".\" + __v.path(); ");
+                sb.append("String __p = (__v.path() == null || __v.path().isEmpty()) ? \"").append(fieldName).append("\" : \"").append(fieldName).append(".\" + __v.path(); ");
                 sb.append("violations.add(new Violation(__p, __v.message(), __v.invalidValue())); } } ");
                 sb.append("}\n");
             }
@@ -178,11 +182,13 @@ public class ValidationProcessor extends AbstractProcessor {
         String fieldName = field.getSimpleName().toString();
         boolean isRecord = classElement.getKind() == ElementKind.RECORD;
         if (isRecord) {
+            messager.printMessage(Diagnostic.Kind.NOTE, "Using record accessor for field: " + fieldName);
             return "obj." + fieldName + "()";
         }
 
         // Public field access
         if (field.getModifiers().contains(javax.lang.model.element.Modifier.PUBLIC)) {
+            messager.printMessage(Diagnostic.Kind.NOTE, "Using public field for: " + fieldName);
             return "obj." + fieldName;
         }
 
@@ -195,6 +201,7 @@ public class ValidationProcessor extends AbstractProcessor {
 
         boolean hasGetter = hasMethod(classElement, getterName) || (isBoolean && hasMethod(classElement, booleanGetterName));
         if (hasGetter) {
+            messager.printMessage(Diagnostic.Kind.NOTE, "Using getter for field: " + fieldName);
             return "obj." + (hasMethod(classElement, getterName) ? getterName : booleanGetterName) + "()";
         }
 
