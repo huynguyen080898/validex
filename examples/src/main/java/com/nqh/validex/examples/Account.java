@@ -4,12 +4,14 @@ import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Pattern;
 import com.nqh.validex.annotations.Email;
 import com.nqh.validex.annotations.Valid;
+import com.nqh.validex.annotations.NotBlank;
 
 /**
  * Example demonstrating @Pattern and @Valid annotations
  */
 public class Account {
     @NotNull
+    @NotBlank
     @Pattern(regex = "^[a-zA-Z0-9_]{3,20}$", message = "username must be 3-20 alphanumeric characters or underscore")
     private String username;
 

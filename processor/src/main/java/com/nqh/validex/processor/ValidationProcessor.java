@@ -6,6 +6,7 @@ import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Size;
 import com.nqh.validex.annotations.NotEmpty;
 import com.nqh.validex.annotations.Email;
+import com.nqh.validex.annotations.NotBlank;
 import com.nqh.validex.annotations.Pattern;
 import com.nqh.validex.annotations.Valid;
 import com.nqh.validex.processor.handler.AnnotationHandler;
@@ -35,7 +36,8 @@ import java.util.*;
         "com.nqh.validex.annotations.Max",
         "com.nqh.validex.annotations.Valid",
         "com.nqh.validex.annotations.Pattern",
-        "com.nqh.validex.annotations.Email"
+        "com.nqh.validex.annotations.Email",
+        "com.nqh.validex.annotations.NotBlank"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class ValidationProcessor extends AbstractProcessor {
@@ -76,6 +78,7 @@ public class ValidationProcessor extends AbstractProcessor {
         handlers.put(Pattern.class, new PatternHandler());
         handlers.put(NotEmpty.class, new com.nqh.validex.processor.handler.impl.NotEmptyHandler());
         handlers.put(Email.class, new com.nqh.validex.processor.handler.impl.EmailHandler());
+        handlers.put(NotBlank.class, new com.nqh.validex.processor.handler.impl.NotBlankHandler());
         messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor initialized with " + handlers.size() + " handlers");
     }
 
