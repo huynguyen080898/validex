@@ -4,6 +4,7 @@ import com.nqh.validex.annotations.Max;
 import com.nqh.validex.annotations.Min;
 import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Size;
+import com.nqh.validex.annotations.Valid;
 import com.nqh.validex.processor.handler.AnnotationHandler;
 import com.nqh.validex.processor.handler.impl.MaxHandler;
 import com.nqh.validex.processor.handler.impl.MinHandler;
@@ -27,7 +28,8 @@ import java.util.*;
         "com.nqh.validex.annotations.NotNull",
         "com.nqh.validex.annotations.Size",
         "com.nqh.validex.annotations.Min",
-        "com.nqh.validex.annotations.Max"
+        "com.nqh.validex.annotations.Max",
+        "com.nqh.validex.annotations.Valid"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class ValidationProcessor extends AbstractProcessor {
@@ -58,7 +60,8 @@ public class ValidationProcessor extends AbstractProcessor {
         messager = env.getMessager();
         elementUtils = env.getElementUtils();
 
-        handlers = new HashMap<>();
+        // Deterministic handler order
+        handlers = new LinkedHashMap<>();
         handlers.put(NotNull.class, new NotNullHandler());
         handlers.put(Size.class, new SizeHandler());
         handlers.put(Min.class, new MinHandler());
@@ -109,6 +112,7 @@ public class ValidationProcessor extends AbstractProcessor {
         sb.append("package ").append(packageName).append(";\n\n");
         sb.append("import com.nqh.validex.core.ValidationResult;\n");
         sb.append("import com.nqh.validex.core.Violation;\n");
+        sb.append("import com.nqh.validex.core.Validators;\n");
         sb.append("import java.util.*;\n\n");
 
         sb.append("public final class ").append(validatorClassName).append(" {\n\n");
@@ -140,6 +144,15 @@ public class ValidationProcessor extends AbstractProcessor {
                     AnnotationHandler<Annotation> handler = (AnnotationHandler<Annotation>) entry.getValue();
                     sb.append(handler.generateValidationCode(fieldName, accessor, ann));
                 }
+            }
+            // Nested validation with @Valid
+            if (field.getAnnotation(Valid.class) != null) {
+                sb.append("{ ");
+                sb.append("ValidationResult __child = Validators.validate(").append(accessor).append("); ");
+                sb.append("if (!__child.isValid()) { for (Violation __v : __child.violations()) { ");
+                sb.append("String __p = __v.path() == null || __v.path().isEmpty() ? \"").append(fieldName).append("\" : \"").append(fieldName).append(".\" + __v.path(); ");
+                sb.append("violations.add(new Violation(__p, __v.message(), __v.invalidValue())); } } ");
+                sb.append("}\n");
             }
         }
 
