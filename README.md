@@ -19,26 +19,26 @@
 
 ## 🚀 Quick Start Guide
 
-### Step 1: Add Maven Dependency
+### Step 1: Add Maven Dependencies
 
 Add Validex to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.nqh</groupId>
-    <artifactId>validex-annotations</artifactId>
-    <version>1.0.0</version>
+    <groupId>com.nqh.validex</groupId>
+    <artifactId>annotations</artifactId>
+    <version>1.0-SNAPSHOT</version>
 </dependency>
 <dependency>
-    <groupId>com.nqh</groupId>
-    <artifactId>validex-processor</artifactId>
-    <version>1.0.0</version>
+    <groupId>com.nqh.validex</groupId>
+    <artifactId>processor</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
 <dependency>
-    <groupId>com.nqh</groupId>
-    <artifactId>validex-core</artifactId>
-    <version>1.0.0</version>
+    <groupId>com.nqh.validex</groupId>
+    <artifactId>core</artifactId>
+    <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
