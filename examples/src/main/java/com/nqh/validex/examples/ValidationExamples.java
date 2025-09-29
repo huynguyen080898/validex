@@ -50,6 +50,22 @@ public class ValidationExamples {
         Order order = new Order(invalidUser, 0); // invalid user and quantity
         ValidationResult orderResult = Validators.validate(order);
         printResult(orderResult);
+
+        // Example 6: @Size on List/Map/Array
+        System.out.println("6. @Size on List/Map/Array:");
+        Inventory invOk = new Inventory(
+            java.util.List.of("a", "b"),
+            java.util.Map.of("k", "v"),
+            new int[]{1,2}
+        );
+        printResult(Validators.validate(invOk));
+
+        Inventory invBad = new Inventory(
+            java.util.List.of(), // too small
+            java.util.Map.of("k1","v1","k2","v2","k3","v3"), // too many
+            new int[]{1} // too short
+        );
+        printResult(Validators.validate(invBad));
     }
 
     private static void printResult(ValidationResult result) {
