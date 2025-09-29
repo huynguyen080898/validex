@@ -9,8 +9,12 @@ Lightweight compile-time validation for Java: annotate fields, get generated val
 ```java
 import com.nqh.validex.annotations.*;
 
-public record User(@NotNull @Size(min = 2, max = 40) String name,
-                   @Min(18) int age) {}
+public record User(
+    @NotNull @Size(min = 2, max = 40) 
+    @Pattern(regex = "^[a-zA-Z\\s]+$", message = "name must contain only letters and spaces") 
+    String name,
+    @Min(18) int age
+) {}
 ```
 
 2) Compile to generate validators
@@ -25,10 +29,15 @@ mvn -DskipTests -pl examples -am compile
 import com.nqh.validex.core.Validators;
 import com.nqh.validex.core.ValidationResult;
 
-ValidationResult result = Validators.validate(new User("A", 17));
+ValidationResult result = Validators.validate(new User("John123", 17));
 if (!result.isValid()) {
-  result.violations().forEach(v -> System.out.println(v.path()+": "+v.message()));
+  result.violations().forEach(v -> 
+    System.out.println(v.path() + ": " + v.message() + " (got: " + v.invalidValue() + ")")
+  );
 }
+// Output:
+// name: name must contain only letters and spaces (got: John123)
+// age: must be >= 18 (got: 17)
 ```
 
 4) Nested validation
@@ -43,10 +52,10 @@ public class Order {
 
 ## Modules
 
-- annotations: `@NotNull`, `@Min`, `@Max`, `@Size`, `@Valid`
+- annotations: `@NotNull`, `@Min`, `@Max`, `@Size`, `@Pattern`, `@Valid`
 - processor: annotation processor that generates `<Type>Validator`
 - core: runtime helpers: `Validators`, `ValidationResult`, `Violation`
-- examples: runnable examples
+- examples: runnable examples with `@Pattern` and `@Valid` demos
 - benchmarks: JMH performance benchmarks
 
 ## Build & run
@@ -55,8 +64,8 @@ public class Order {
 # Build all
 mvn -DskipTests clean package
 
-# Run example
-java -cp examples/target/classes:core/target/classes com.nqh.validex.examples.TestHandler
+# Run examples
+java -cp examples/target/classes:core/target/classes:annotations/target/classes com.nqh.validex.examples.ValidationExamples
 
 # Run benchmarks
 java -jar benchmarks/target/benchmarks-1.0-SNAPSHOT.jar -wi 3 -i 5 -f 1
