@@ -8,9 +8,5 @@ public class TestHandler {
         TestRequest req = new TestRequest(null, 16);
         ValidationResult res = Validators.validate(req);
         System.out.println(res);
-
-        CreateUserRequest createUserRequest = new CreateUserRequest("", 20);
-        ValidationResult res2 = Validators.validate(createUserRequest);
-        System.out.println(res2);
     }
 }

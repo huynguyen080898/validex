@@ -1,5 +1,8 @@
 package com.nqh.validex.core;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +12,7 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Convenience runtime entrypoints for invoking generated validators.
@@ -32,10 +36,10 @@ public final class Validators {
     }
 
     private static volatile boolean failSafe = true;
-    private static volatile Logger logger = (msg, err) -> {};
+    private static final AtomicReference<Logger> LOGGER = new AtomicReference<>((msg, err) -> {});
 
     private static final ConcurrentMap<Class<?>, Optional<Invoker>> CACHE = new ConcurrentHashMap<>();
-    private static volatile List<ValidatorProvider> providers;
+    private static final AtomicReference<List<ValidatorProvider>> PROVIDERS = new AtomicReference<>();
 
     /**
      * Configure whether to swallow internal reflection errors (default true).
@@ -46,7 +50,7 @@ public final class Validators {
 
     /** Configure logger used for internal warnings. */
     public static void setLogger(Logger customLogger) {
-        logger = (customLogger == null) ? (msg, err) -> {} : customLogger;
+        LOGGER.set((customLogger == null) ? (msg, err) -> {} : customLogger);
     }
 
     /** Validate an object using generated validator or SPI providers. */
@@ -60,11 +64,11 @@ public final class Validators {
         if (invoker != null) {
             try {
                 return invoker.invoke(obj);
-            } catch (Exception err) {
+            } catch (Exception e) {
                 if (!failSafe) {
-                    throw propagate(err);
+                    throw propagate(e);
                 }
-                logger.warn("Validator invocation failed; returning ok() due to failSafe", err);
+                LOGGER.get().warn("Validator invocation failed; returning ok() due to failSafe", e);
             }
         }
 
@@ -77,11 +81,11 @@ public final class Validators {
                 if (r != null) {
                     return r;
                 }
-            } catch (Exception err) {
+            } catch (Exception e) {
                 if (!failSafe) {
-                    throw propagate(err);
+                    throw propagate(e);
                 }
-                logger.warn("ValidatorProvider failed; continuing due to failSafe", err);
+                LOGGER.get().warn("ValidatorProvider failed; continuing due to failSafe", e);
             }
         }
         return ValidationResult.ok();
@@ -95,26 +99,27 @@ public final class Validators {
         }
     }
 
-    private static RuntimeException propagate(Throwable t) {
-        if (t instanceof RuntimeException re) return re;
-        return new RuntimeException(t);
+    private static RuntimeException propagate(Exception t) {
+        if (t instanceof RuntimeException re) {
+            return re;
+        }
+        return new ValidatorInvocationException(t);
     }
 
     private static List<ValidatorProvider> loadProviders() {
-        List<ValidatorProvider> ps = providers;
-        if (ps == null) {
-            synchronized (Validators.class) {
-                if (providers == null) {
-                    List<ValidatorProvider> list = new ArrayList<>();
-                    for (ValidatorProvider p : ServiceLoader.load(ValidatorProvider.class)) {
-                        list.add(p);
-                    }
-                    providers = Collections.unmodifiableList(list);
-                }
-                ps = providers;
-            }
+        List<ValidatorProvider> ps = PROVIDERS.get();
+        if (ps != null) {
+            return ps;
         }
-        return ps;
+        List<ValidatorProvider> list = new ArrayList<>();
+        for (ValidatorProvider p : ServiceLoader.load(ValidatorProvider.class)) {
+            list.add(p);
+        }
+        List<ValidatorProvider> unmodifiable = Collections.unmodifiableList(list);
+        if (PROVIDERS.compareAndSet(null, unmodifiable)) {
+            return unmodifiable;
+        }
+        return PROVIDERS.get();
     }
 
     private static Invoker resolveInvoker(Class<?> type) {
@@ -131,14 +136,15 @@ public final class Validators {
                 Class<?> validatorClass = Class.forName(validatorClassName, true, cl);
                 Object instance = validatorClass.getField("INSTANCE").get(null);
                 Method m = validatorClass.getMethod("validate", t);
-                return Optional.of(new Invoker(instance, m));
+                MethodHandle mh = MethodHandles.lookup().unreflect(m);
+                return Optional.of(new Invoker(instance, mh));
             } catch (ClassNotFoundException e) {
                 // continue
             } catch (Exception err) {
                 if (!failSafe) {
                     throw propagate(err);
                 }
-                logger.warn("Failed to bind validator '" + validatorClassName + "'", err);
+                LOGGER.get().warn("Failed to bind validator '" + validatorClassName + "'", err);
             }
         }
         return Optional.empty();
@@ -162,12 +168,22 @@ public final class Validators {
         return order;
     }
 
-    private record Invoker(Object instance, Method method) {
-        ValidationResult invoke(Object arg) throws Exception {
+    private record Invoker(Object instance, MethodHandle methodHandle) {
+        ValidationResult invoke(Object arg) {
             Objects.requireNonNull(arg, "arg");
-            @SuppressWarnings("unchecked")
-            ValidationResult result = (ValidationResult) method.invoke(instance, arg);
-            return result;
+            try {
+                Object res = methodHandle.bindTo(instance).invoke(arg);
+                return (ValidationResult) res;
+            } catch (Throwable e) {
+                // MethodHandle.invoke throws Throwable; wrap as dedicated runtime exception
+                if (e instanceof InvocationTargetException ite && ite.getCause() != null) {
+                    throw new ValidatorInvocationException("Failed to invoke validator method", ite.getCause());
+                }
+                if (e instanceof Exception ex) {
+                    throw new ValidatorInvocationException("Failed to invoke validator method", ex);
+                }
+                throw new ValidatorInvocationException("Failed to invoke validator method", new RuntimeException(e.getMessage(), e));
+            }
         }
     }
 }
