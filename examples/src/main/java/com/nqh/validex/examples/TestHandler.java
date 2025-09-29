@@ -5,8 +5,9 @@ import com.nqh.validex.core.Validators;
 
 public class TestHandler {
     public static void main(String[] args) {
-        TestRequest req = new TestRequest(null, 16);
-        ValidationResult res = Validators.validate(req);
+        User user = new User("A", 17);
+        Order order = new Order(user, 0);
+        ValidationResult res = Validators.validate(order);
         System.out.println(res);
     }
 }
