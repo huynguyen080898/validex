@@ -2,6 +2,7 @@ package com.nqh.validex.examples;
 
 import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Pattern;
+import com.nqh.validex.annotations.Email;
 import com.nqh.validex.annotations.Valid;
 
 /**
@@ -13,7 +14,7 @@ public class Account {
     private String username;
 
     @NotNull
-    @Pattern(regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "invalid email format")
+    @Email
     private String email;
 
     @NotNull
