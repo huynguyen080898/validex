@@ -4,6 +4,7 @@ import com.nqh.validex.annotations.Max;
 import com.nqh.validex.annotations.Min;
 import com.nqh.validex.annotations.NotNull;
 import com.nqh.validex.annotations.Size;
+import com.nqh.validex.annotations.Pattern;
 import com.nqh.validex.annotations.Valid;
 import com.nqh.validex.processor.handler.AnnotationHandler;
 import com.nqh.validex.processor.handler.impl.MaxHandler;
@@ -29,7 +30,8 @@ import java.util.*;
         "com.nqh.validex.annotations.Size",
         "com.nqh.validex.annotations.Min",
         "com.nqh.validex.annotations.Max",
-        "com.nqh.validex.annotations.Valid"
+        "com.nqh.validex.annotations.Valid",
+        "com.nqh.validex.annotations.Pattern"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class ValidationProcessor extends AbstractProcessor {
@@ -39,6 +41,7 @@ public class ValidationProcessor extends AbstractProcessor {
     public static final String MSG_MIN = "must be >= %d";
     public static final String MSG_MAX = "must be <= %d";
     public static final String MSG_OBJ_NULL = "object must not be null";
+    public static final String MSG_PATTERN = "must match pattern";
 
     private Filer filer;
     private Messager messager;
@@ -66,6 +69,7 @@ public class ValidationProcessor extends AbstractProcessor {
         handlers.put(Size.class, new com.nqh.validex.processor.handler.impl.SizeHandler());
         handlers.put(Min.class, new com.nqh.validex.processor.handler.impl.MinHandler());
         handlers.put(Max.class, new com.nqh.validex.processor.handler.impl.MaxHandler());
+        handlers.put(Pattern.class, new com.nqh.validex.processor.handler.impl.PatternHandler());
         messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor initialized with " + handlers.size() + " handlers");
     }
 
