@@ -9,6 +9,8 @@ import com.nqh.validex.annotations.Email;
 import com.nqh.validex.annotations.NotBlank;
 import com.nqh.validex.annotations.Positive;
 import com.nqh.validex.annotations.PositiveOrZero;
+import com.nqh.validex.annotations.Negative;
+import com.nqh.validex.annotations.NegativeOrZero;
 import com.nqh.validex.annotations.Pattern;
 import com.nqh.validex.annotations.Valid;
 import com.nqh.validex.processor.handler.AnnotationHandler;
@@ -41,7 +43,9 @@ import java.util.*;
         "com.nqh.validex.annotations.Email",
         "com.nqh.validex.annotations.NotBlank",
         "com.nqh.validex.annotations.Positive",
-        "com.nqh.validex.annotations.PositiveOrZero"
+        "com.nqh.validex.annotations.PositiveOrZero",
+        "com.nqh.validex.annotations.Negative",
+        "com.nqh.validex.annotations.NegativeOrZero"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 public class ValidationProcessor extends AbstractProcessor {
@@ -85,6 +89,8 @@ public class ValidationProcessor extends AbstractProcessor {
         handlers.put(NotBlank.class, new com.nqh.validex.processor.handler.impl.NotBlankHandler());
         handlers.put(Positive.class, new com.nqh.validex.processor.handler.impl.PositiveHandler());
         handlers.put(PositiveOrZero.class, new com.nqh.validex.processor.handler.impl.PositiveOrZeroHandler());
+        handlers.put(Negative.class, new com.nqh.validex.processor.handler.impl.NegativeHandler());
+        handlers.put(NegativeOrZero.class, new com.nqh.validex.processor.handler.impl.NegativeOrZeroHandler());
         messager.printMessage(Diagnostic.Kind.NOTE, "ValidationProcessor initialized with " + handlers.size() + " handlers");
     }
 
