@@ -13,10 +13,11 @@ public final class EmailHandler implements AnnotationHandler<Email> {
     public String generateValidationCode(String fieldName, String accessor, Email ann) {
         String message = ann.message().equals(DEFAULT_MESSAGE) ? DEFAULT_MESSAGE : ann.message();
         String escapedMessage = message.replace("\\", "\\\\").replace("\"", "\\\"");
+        String escapedRegex = REGEX.replace("\\", "\\\\").replace("\"", "\\\"");
         return String.format(
                 "if (%s != null && !java.util.regex.Pattern.matches(\"%s\", %s instanceof CharSequence ? %s.toString() : String.valueOf(%s))) { violations.add(new Violation(\"%s\", \"%s\", %s)); }%n",
                 accessor,
-                REGEX,
+                escapedRegex,
                 accessor, accessor, accessor,
                 fieldName,
                 escapedMessage,
