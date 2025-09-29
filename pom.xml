@@ -13,6 +13,7 @@
         <module>annotations</module>
         <module>processor</module>
         <module>examples</module>
+        <module>benchmarks</module>
     </modules>
 
     <properties>
