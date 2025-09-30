@@ -8,6 +8,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nqh.validex</groupId>
   <artifactId>benchmarks</artifactId>
+
+  <scm>
+    <url>https://github.com/nqh98/validex</url>
+    <connection>scm:git:https://github.com/nqh98/validex.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/nqh98/validex.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
   <build>
     <plugins>
       <plugin>
