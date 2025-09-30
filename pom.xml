@@ -4,7 +4,7 @@
 
     <groupId>com.nqh</groupId>
     <artifactId>validex</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Validex</name>
     <description>Lightweight compile-time validation for Java: annotate fields, generate validators, validate at runtime.</description>
@@ -33,7 +33,7 @@
         <url>https://github.com/nqh98/validex</url>
         <connection>scm:git:https://github.com/nqh98/validex.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/nqh98/validex.git</developerConnection>
-        <tag>v1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <modules>
