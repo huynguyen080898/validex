@@ -32,7 +32,7 @@
     </developers>
 
     <scm>
-        <url>https://github.com/huynq/validex</url>
+        <url>git@github.com/nqh98/validex.git</url>
         <connection>scm:git:git@github.com/nqh98/validex.git</connection>
         <developerConnection>scm:git:git@github.com/nqh98/validex.git</developerConnection>
         <tag>HEAD</tag>
