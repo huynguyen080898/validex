@@ -161,6 +161,16 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <!-- Root is an aggregator; don't deploy its POM to OSSRH -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <distributionManagement>
