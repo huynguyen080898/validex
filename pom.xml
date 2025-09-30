@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
     <name>Validex</name>
     <description>Lightweight compile-time validation for Java: annotate fields, generate validators, validate at runtime.</description>
-    <url>git@github.com/nqh98/validex.git</url>
+    <url>https://github.com/nqh98/validex</url>
 
     <licenses>
         <license>
@@ -32,7 +32,7 @@
     </developers>
 
     <scm>
-        <url>git@github.com/nqh98/validex.git</url>
+        <url>https://github.com/nqh98/validex</url>
         <connection>scm:git:git@github.com/nqh98/validex.git</connection>
         <developerConnection>scm:git:git@github.com/nqh98/validex.git</developerConnection>
         <tag>HEAD</tag>
