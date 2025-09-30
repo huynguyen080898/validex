@@ -17,7 +17,6 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Temurin JDK 17 with GPG and OSSRH
-        if: ${{ secrets.OSSRH_USERNAME != '' && secrets.OSSRH_PASSWORD != '' && secrets.GPG_PRIVATE_KEY != '' && secrets.GPG_PASSPHRASE != '' }}
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -32,10 +31,8 @@ jobs:
       - name: Show Maven version
         run: mvn -v
 
-      
 
       - name: Deploy core modules to OSSRH
-        if: ${{ secrets.OSSRH_USERNAME != '' && secrets.OSSRH_PASSWORD != '' && secrets.GPG_PRIVATE_KEY != '' && secrets.GPG_PASSPHRASE != '' }}
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
@@ -45,7 +42,6 @@ jobs:
             -pl core,annotations,processor -am deploy
 
       - name: Close and release staging repository
-        if: ${{ secrets.OSSRH_USERNAME != '' && secrets.OSSRH_PASSWORD != '' && secrets.GPG_PRIVATE_KEY != '' && secrets.GPG_PASSPHRASE != '' }}
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
