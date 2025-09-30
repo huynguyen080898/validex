@@ -37,9 +37,4 @@ jobs:
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
             deploy
 
-      - name: Close & Release Staging Repository
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: |
-          mvn -B -ntp nexus-staging:close nexus-staging:release
+      # Close & release is automatic via nexus-staging-maven-plugin (autoReleaseAfterClose=true)
