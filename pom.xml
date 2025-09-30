@@ -33,10 +33,11 @@
 
     <scm>
         <url>https://github.com/huynq/validex</url>
-        <connection>scm:git:https://github.com/huynq/validex.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/huynq/validex.git</developerConnection>
+        <connection>scm:git:git@github.com/nqh98/validex.git</connection>
+        <developerConnection>scm:git:git@github.com/nqh98/validex.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
     <modules>
         <module>core</module>
         <module>annotations</module>
