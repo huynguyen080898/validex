@@ -18,6 +18,10 @@ jobs:
 
       - name: Set up Temurin JDK 17 with GPG and OSSRH
         uses: actions/setup-java@v4
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -42,13 +46,5 @@ jobs:
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
             -pl core,annotations,processor -am deploy
 
-      - name: Close and release staging repository
-        env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: |
-          mvn -B -ntp \
-            -pl core,annotations,processor -am \
-            nexus-staging:release
 
 
