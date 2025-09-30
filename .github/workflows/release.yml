@@ -1,13 +1,12 @@
 name: Release to Maven Central
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # chỉ chạy khi trigger tay
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
-    environment:
-      name: maven-central
+    environment: maven-central
     permissions:
       contents: read
 
@@ -21,7 +20,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          server-id: 'ossrh'
+          server-id: 'ossrh' # phải khớp với <id> trong pom.xml
           server-username: ${{ secrets.OSSRH_USERNAME }}
           server-password: ${{ secrets.OSSRH_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
@@ -34,8 +33,13 @@ jobs:
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn -B -ntp -DskipTests -Dgpg.passphrase="${GPG_PASSPHRASE}" deploy
+          mvn -B -ntp -DskipTests \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}" \
+            deploy
 
-      - name: Close and release staging repository
+      - name: Close & Release Staging Repository
+        env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: |
           mvn -B -ntp nexus-staging:close nexus-staging:release

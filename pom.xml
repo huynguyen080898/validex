@@ -51,8 +51,6 @@
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.junit.jupiter.version>6.0.0-RC3</org.junit.jupiter.version>
-        <com.google.testing.compile.version>0.21.0</com.google.testing.compile.version>
-        <com.google.guava.version>33.2.1-jre</com.google.guava.version>
     </properties>
 
     <dependencyManagement>
@@ -161,6 +159,17 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        
+        <!-- Root is an aggregator; don't deploy its POM to OSSRH -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <distributionManagement>
