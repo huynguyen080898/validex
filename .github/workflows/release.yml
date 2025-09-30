@@ -23,10 +23,10 @@ jobs:
           java-version: '17'
           cache: 'maven'
           server-id: 'ossrh'
-          server-username: OSSRH_USERNAME
-          server-password: OSSRH_PASSWORD
+          server-username: ${{ secrets.OSSRH_USERNAME }}
+          server-password: ${{ secrets.OSSRH_PASSWORD }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Show Maven version
         run: mvn -v
@@ -43,8 +43,8 @@ jobs:
             <servers>
               <server>
                 <id>ossrh</id>
-                <username>\${env.OSSRH_USERNAME}</username>
-                <password>\${env.OSSRH_PASSWORD}</password>
+                <username>${{ secrets.OSSRH_USERNAME }}</username>
+                <password>${{ secrets.OSSRH_PASSWORD }}</password>
               </server>
             </servers>
           </settings>
@@ -52,8 +52,6 @@ jobs:
 
       - name: Deploy core modules to OSSRH
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B -ntp -DskipTests \
