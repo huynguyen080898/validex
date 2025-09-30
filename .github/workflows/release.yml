@@ -3,7 +3,6 @@ name: Release to Maven Central
 on:
   workflow_dispatch: {}
   release:
-    types: [published]
 
 jobs:
   deploy:
@@ -12,6 +11,7 @@ jobs:
       name: maven-central
     permissions:
       contents: read
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,9 +31,10 @@ jobs:
       - name: Show Maven version
         run: mvn -v
 
-
       - name: Deploy core modules to OSSRH
         env:
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn -B -ntp -DskipTests \
@@ -48,4 +49,4 @@ jobs:
         run: |
           mvn -B -ntp \
             -pl core,annotations,processor -am \
-            nexus-staging:release
+            nexus-staging:close nexus-staging:release
