@@ -22,7 +22,7 @@
 
     <developers>
         <developer>
-            <id>huynq</id>
+            <id>nqh98</id>
             <name>Nguyen Quang Huy</name>
             <roles>
                 <role>developer</role>
@@ -33,8 +33,8 @@
 
     <scm>
         <url>https://github.com/nqh98/validex</url>
-        <connection>scm:git:git@github.com/nqh98/validex.git</connection>
-        <developerConnection>scm:git:git@github.com/nqh98/validex.git</developerConnection>
+        <connection>scm:git:https://github.com/nqh98/validex.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/nqh98/validex.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
